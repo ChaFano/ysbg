@@ -4,6 +4,7 @@ server:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 查看日志
+    default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler #开启通用枚举支持，默认使用ordinalType
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
@@ -11,3 +12,7 @@ spring:
     url: jdbc:mysql://localhost:3306/guigu-oa?serverTimezone=GMT%2B8&useSSL=false&characterEncoding=utf-8
     username: root
     password: 3306
+#设置时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
