@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**
@@ -47,4 +48,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         return baseMapper.selectPage(pageParam,wrapper);
     }
+
+    @Transactional
+    @Override
+    public void updateStatus(Long id, Integer status) {
+        SysUser sysUser = this.getById(id);
+        if(status.intValue() == 1) {
+            sysUser.setStatus(status);
+        } else {
+            sysUser.setStatus(0);
+        }
+        this.updateById(sysUser);
+    }
+
+
+
 }

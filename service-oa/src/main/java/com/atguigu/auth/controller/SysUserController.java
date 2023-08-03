@@ -63,6 +63,12 @@ public class SysUserController {
         return R.ok();
     }
 
+    @ApiOperation(value = "更新状态")
+    @GetMapping("updateStatus/{id}/{status}")
+    public R updateStatus(@PathVariable Long id, @PathVariable Integer status) {
+        service.updateStatus(id, status);
+        return R.ok();
+    }
 
 
 }
