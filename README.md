@@ -2,9 +2,19 @@
 
 ## 技术栈
 
->SpringBoot 、MySQL、
+>后端: SpringBoot 、MySQL、Mybatis Plus
 >
+>前端: VUE、Axios
 >
+
+
+## github 远程推送 443 问题
+>1、有的是网络问题 网上一般说是 https 和 http 代理问题，一般需要配置一下，但我的貌似不起作用 
+> stackOverflow 博客：https://stackoverflow.com/questions/27087483/how-to-resolve-git-pull-fatal-unable-to-access-https-github-com-empty
+>
+>2、我遇到的时候解决方案 将远程地址解除关联 git remote rm origin ,再重新关联 git remote add origin 远程地址，再次推送代码成功。
+>github官方博客地址: https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories
+
 
 ## 日志
 
@@ -30,6 +40,8 @@
 
 ### 2023-8-4
 >1、菜单管理 crud 权限分配问题解决，原因是未配置请求导致获取不到数据
+>
+>2、
 
 
 

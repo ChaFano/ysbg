@@ -1,14 +1,24 @@
 package com.atguigu.auth.controller;
 
+import com.atguigu.auth.service.SysUserService;
+import com.atguigu.common.execption.GuiguException;
+import com.atguigu.common.jwt.JwtHelper;
 import com.atguigu.common.result.R;
+import com.atguigu.model.system.SysUser;
+import com.atguigu.vo.system.LoginVo;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
+import org.springframework.web.bind.annotation.*;
+import sun.security.provider.MD5;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static sun.security.provider.MD5.*;
 
 /**
  * @Auther: 茶凡
@@ -21,28 +31,40 @@ import java.util.Map;
 @RequestMapping("/admin/system/index")
 public class IndexController {
 
+    @Autowired
+    private SysUserService sysUserService;
 
     /**
      * 登录
      * @return
      */
     @PostMapping("login")
-    public R login() {
+    public R login(@RequestBody LoginVo loginVo) {
+
+        SysUser sysUser = sysUserService.getByUsername(loginVo.getUsername());
+
+        if(null == sysUser){
+            throw  new GuiguException(201,"用户不存在");
+        }
+        if(! DigestUtils.md5DigestAsHex(loginVo.getPassword().getBytes()).equals(sysUser.getPassword())) {
+            throw new GuiguException(201,"密码错误");
+        }
+        if(sysUser.getStatus().intValue() == 0) {
+            throw new GuiguException(201,"用户被禁用");
+        }
         Map<String, Object> map = new HashMap<>();
-        map.put("token","admin");
-        System.out.println("登录成功");
+        map.put("token", JwtHelper.createToken(sysUser.getId(), sysUser.getUsername()));
         return R.ok(map);
     }
     /**
      * 获取用户信息
      * @return
      */
+    @ApiOperation(value = "获取用户信息")
     @GetMapping("info")
-    public R info() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("roles","[admin]");
-        map.put("name","admin");
-        map.put("avatar","https://oss.aliyuncs.com/aliyun_id_photo_bucket/default_handsome.jpg");
+    public R info(HttpServletRequest request) {
+        String username = JwtHelper.getUsername(request.getHeader("token"));
+        Map<String, Object> map = sysUserService.getUserInfo(username);
         return R.ok(map);
     }
     /**
@@ -54,5 +76,10 @@ public class IndexController {
         return R.ok();
     }
 
+//    public static void main(String[] args) {
+//        String password = "111111";
+//        System.out.println(DigestUtils.md5DigestAsHex(password.getBytes()));
+//    }
 
 }
+
