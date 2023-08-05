@@ -131,7 +131,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         if (userId.longValue() == 1) {
             sysMenuList = this.list(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getStatus, 1));
         } else {
-            sysMenuList = sysMenuMapper.findListByUserId(userId);
+
+            try {
+                sysMenuList = sysMenuMapper.findListByUserId(userId);
+
+                System.out.println(sysMenuList);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         List<String> permsList = sysMenuList.stream().filter(item -> item.getType() == 2).map(item -> item.getPerms()).collect(Collectors.toList());
         return permsList;

@@ -8,17 +8,15 @@ import com.atguigu.model.system.SysUser;
 import com.atguigu.vo.system.LoginVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
-import sun.security.provider.MD5;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static sun.security.provider.MD5.*;
 
 /**
  * @Auther: 茶凡
@@ -46,7 +44,7 @@ public class IndexController {
         if(null == sysUser){
             throw  new GuiguException(201,"用户不存在");
         }
-        if(! DigestUtils.md5DigestAsHex(loginVo.getPassword().getBytes()).equals(sysUser.getPassword())) {
+        if(!com.atguigu.common.util.MD5.encrypt(loginVo.getPassword()).equals(sysUser.getPassword())) {
             throw new GuiguException(201,"密码错误");
         }
         if(sysUser.getStatus().intValue() == 0) {
@@ -56,6 +54,8 @@ public class IndexController {
         map.put("token", JwtHelper.createToken(sysUser.getId(), sysUser.getUsername()));
         return R.ok(map);
     }
+
+    protected final Log logger = LogFactory.getLog(getClass());
     /**
      * 获取用户信息
      * @return
@@ -63,7 +63,10 @@ public class IndexController {
     @ApiOperation(value = "获取用户信息")
     @GetMapping("info")
     public R info(HttpServletRequest request) {
+
         String username = JwtHelper.getUsername(request.getHeader("token"));
+
+        logger.info("==================== username: " + username);
         Map<String, Object> map = sysUserService.getUserInfo(username);
         return R.ok(map);
     }

@@ -4,9 +4,12 @@ package com.atguigu.common.handler;
 
 import com.atguigu.common.execption.GuiguException;
 import com.atguigu.common.result.R;
+import com.atguigu.common.result.ResultCodeEnum;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.nio.file.AccessDeniedException;
 
 /**
  * @Auther: 茶凡
@@ -68,6 +71,17 @@ public class GlobalExceptionHandler {
     public R error(GuiguException e){
         e.printStackTrace();
         return R.fail().message(e.getMessage()).code(e.getCode());
+    }
+
+    /**
+     * spring security异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseBody
+    public R error(AccessDeniedException e) throws AccessDeniedException {
+        return R.build(null, ResultCodeEnum.PERMISSION);
     }
 
 }

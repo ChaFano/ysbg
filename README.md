@@ -2,9 +2,9 @@
 
 ## 技术栈
 
->后端: SpringBoot 、MySQL、Mybatis Plus
+>后端: SpringBoot + MyBatisPlus + SpringSecurity + Redis + Activiti+ MySQL
 >
->前端: VUE、Axios
+>前端: vue-admin-template + Node.js + Npm + Vue + ElementUI + Axios
 >
 
 
@@ -15,6 +15,9 @@
 >2、我遇到的时候解决方案 将远程地址解除关联 git remote rm origin ,再重新关联 git remote add origin 远程地址，再次推送代码成功。
 >github官方博客地址: https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories
 
+## 工具
+
+> 1、yml语法检测网站 : https://www.yamllint.com
 
 ## 日志
 
@@ -43,6 +46,41 @@
 >
 >2、角色管理 后端实现，前端调试通过
 
+### 2023-8-5
+>1、加入 spring security 组件做授权与认证
+>
+>AuthenticationManager 在校验用户身份时需要以下组件
+>>
+>>1、一个实现了 UserDetailsService 接口的类，用于加载用户的详细信息。
+>>
+>>2、一个实现了 PasswordEncoder 接口的类，用于对用户密码进行加密。
+>>
+>>3、一个实现了 AuthenticationProvider 接口的类，包含了具体的用户身份认证逻辑。
+>
+>
+>
+>2、WebSecurityConfig 配置 (extends WebSecurityConfigurerAdapter)
+>> 1、configure(HttpSecurity http) 这是配置的关键，决定哪些接口开启防护，哪些接口绕过防护
+>>
+>> 2、configure(AuthenticationManagerBuilder auth) 加密认证的算法配置
+>>
+>> 3、configure(WebSecurity web) 配置哪些请求不用拦截，一般包含一些资源图片，接口文档地址等
+>
+>3、自定义加密组件 CustomMd5PasswordEncoder 类
+>
+>4、UserDetailsServiceImpl (service-oa) 重写 loadUserByUsername(String username) 方法 
+>
+>5、TokenLoginFilter(登录过滤器，继承UsernamePasswordAuthenticationFilter，对用户名密码进行登录校验)
+>
+>6、TokenAuthenticationFilter(认证解析token过滤器)
+>
+>7、问题：权限分配未生效 除了超级管理员外，普通用户不能登录 
+>
+> 原因 findListByUserId(Long userId) 该方法执行报错  Invalid bound statement (not found),
+>
+>排除 sql 语句错误 ，pom 打包资源文件 .xml 过滤掉的错误 ，具体原因还没有找出来
+>
+>原因没有加配置( mapper-locations: classpath:com/atguigu/auth/mapper/xml/*.xml ),其中耗时一下午 😭 
 
 
 

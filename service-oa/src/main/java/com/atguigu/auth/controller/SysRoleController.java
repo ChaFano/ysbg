@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class SysRoleController {
     @Autowired
     private SysRoleService sysRoleService;
 
+    @PreAuthorize("hasAuthority('bnt.sysRole.list')")
     @ApiOperation(value = "获取全部角色列表")
     @GetMapping("findAll")
     public R<List<SysRole>> findAll() {
@@ -48,6 +50,7 @@ public class SysRoleController {
         return R.ok(pageModel);
     }
 
+    @PreAuthorize("hasAuthority('bnt.sysRole.list')")
     @ApiOperation(value = "获取")
     @GetMapping("get/{id}")
     public R get(@PathVariable Long id) {
@@ -55,6 +58,7 @@ public class SysRoleController {
         return R.ok(role);
     }
 
+    @PreAuthorize("hasAuthority('bnt.sysRole.add')")
     @ApiOperation(value = "新增角色")
     @PostMapping("save")
     public R save(@RequestBody @Validated SysRole role) {
@@ -62,6 +66,7 @@ public class SysRoleController {
         return R.ok();
     }
 
+    @PreAuthorize("hasAuthority('bnt.sysRole.update')")
     @ApiOperation(value = "修改角色")
     @PutMapping("update")
     public R updateById(@RequestBody SysRole role) {
@@ -69,6 +74,7 @@ public class SysRoleController {
         return R.ok();
     }
 
+    @PreAuthorize("hasAuthority('bnt.sysRole.remove')")
     @ApiOperation(value = "删除角色")
     @DeleteMapping("remove/{id}")
     public R remove(@PathVariable Long id) {
@@ -76,12 +82,14 @@ public class SysRoleController {
         return R.ok();
     }
 
+    @PreAuthorize("hasAuthority('bnt.sysRole.remove')")
     @ApiOperation(value = "根据id列表删除")
     @DeleteMapping("batchRemove")
     public R batchRemove(@RequestBody List<Long> idList) {
         sysRoleService.removeByIds(idList);
         return R.ok();
     }
+
 
     @ApiOperation(value = "根据用户获取角色数据")
     @GetMapping("/toAssign/{userId}")

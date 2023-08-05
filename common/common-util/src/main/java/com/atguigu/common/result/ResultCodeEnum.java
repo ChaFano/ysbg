@@ -17,7 +17,9 @@ public enum ResultCodeEnum {
     DATA_ERROR(204, "数据异常"),
 
     LOGIN_AUTH(208, "未登陆"),
-    PERMISSION(209, "没有权限")
+    LOGIN_MOBLE_ERROR(210,"登录失败"),
+    PERMISSION(209, "没有权限"),
+    ACCOUNT_STOP(210,"账号已停用")
     ;
 
     private Integer code;

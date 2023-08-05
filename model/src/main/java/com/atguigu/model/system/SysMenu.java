@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -51,6 +52,17 @@ public class SysMenu extends BaseEntity {
 	@ApiModelProperty(value = "状态(0:禁止,1:正常)")
 	@TableField("status")
 	private Integer status;
+
+//	@ApiModelProperty(value = "删除(0:正常,1:删除)")
+//	@TableField("is_deleted")
+//	private boolean isDeleted;
+//
+//	@TableField("create_time")
+//	private Timestamp createTime;
+//
+//	@TableField("update_time")
+//	private Timestamp updateTime;
+
 
 	// 下级列表
 	@TableField(exist = false)

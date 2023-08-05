@@ -2,6 +2,7 @@ server:
   port: 8800
 
 mybatis-plus:
+  mapper-locations: classpath:com/atguigu/auth/mapper/xml/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 查看日志
     default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler #开启通用枚举支持，默认使用ordinalType
@@ -16,3 +17,15 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  redis:
+    host: 192.168.210.200
+    port: 6379
+    database: 0
+    timeout: 1800000
+    password:
+    jedis:
+      pool:
+        max-active: 20 #最大连接数
+        max-wait: -1    #最大阻塞等待时间(负数表示没限制)
+        max-idle: 5    #最大空闲
+        min-idle: 0     #最小空闲
