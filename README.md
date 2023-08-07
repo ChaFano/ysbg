@@ -14,6 +14,8 @@
 >
 >2、我遇到的时候解决方案 将远程地址解除关联 git remote rm origin ,再重新关联 git remote add origin 远程地址，再次推送代码成功。
 >github官方博客地址: https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories
+>
+>3、很多时候确实是网络的问题，等一哈又可以上传了
 
 ## 工具
 
@@ -104,5 +106,11 @@
 >
 >
 
+### 2023-8-6 审批设置 和 审批管理
 
+>1、审批甚至 CRUD 实现
+>
+>2、
+>
+>
 

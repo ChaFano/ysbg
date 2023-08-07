@@ -53,16 +53,6 @@ public class SysMenu extends BaseEntity {
 	@TableField("status")
 	private Integer status;
 
-//	@ApiModelProperty(value = "删除(0:正常,1:删除)")
-//	@TableField("is_deleted")
-//	private boolean isDeleted;
-//
-//	@TableField("create_time")
-//	private Timestamp createTime;
-//
-//	@TableField("update_time")
-//	private Timestamp updateTime;
-
 
 	// 下级列表
 	@TableField(exist = false)
