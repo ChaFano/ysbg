@@ -22,6 +22,7 @@ public class ProcessQueryVo {
 	private Long processTypeId;
 
 	private String createTimeBegin;
+
 	private String createTimeEnd;
 
 	@ApiModelProperty(value = "状态（0：默认 1：审批中 2：审批通过 -1：驳回）")

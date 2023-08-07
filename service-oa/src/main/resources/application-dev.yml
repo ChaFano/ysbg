@@ -2,7 +2,7 @@ server:
   port: 8800
 
 mybatis-plus:
-  mapper-locations: classpath:com/atguigu/auth/mapper/xml/*.xml
+  mapper-locations: classpath:com/atguigu/*/mapper/xml/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 查看日志
     default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler #开启通用枚举支持，默认使用ordinalType
@@ -10,7 +10,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/guigu-oa?serverTimezone=GMT%2B8&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://127.0.0.1:3306/guigu-oa?serverTimezone=GMT%2B8&useSSL=false&characterEncoding=utf-8
     username: root
     password: 3306
 #设置时间格式

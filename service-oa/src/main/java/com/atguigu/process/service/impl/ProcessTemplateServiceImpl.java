@@ -3,15 +3,18 @@ package com.atguigu.process.service.impl;
 import com.atguigu.model.process.ProcessTemplate;
 import com.atguigu.model.process.ProcessType;
 import com.atguigu.process.mapper.ProcessTemplateMapper;
+import com.atguigu.process.service.ProcessService;
 import com.atguigu.process.service.ProcessTemplateService;
 import com.atguigu.process.service.ProcessTypeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -34,6 +37,10 @@ public class ProcessTemplateServiceImpl extends ServiceImpl<ProcessTemplateMappe
     @Resource
     private ProcessTypeService processTypeService;
 
+    @Autowired
+    private ProcessService processService;
+
+
     @Override
     public IPage<ProcessTemplate> selectPage(Page<ProcessTemplate> pageParam) {
         LambdaQueryWrapper<ProcessTemplate> queryWrapper = new LambdaQueryWrapper<ProcessTemplate>();
@@ -54,6 +61,8 @@ public class ProcessTemplateServiceImpl extends ServiceImpl<ProcessTemplateMappe
         return page;
     }
 
+
+
     @Transactional
     @Override
     public void publish(Long id) {
@@ -61,7 +70,9 @@ public class ProcessTemplateServiceImpl extends ServiceImpl<ProcessTemplateMappe
         processTemplate.setStatus(1);
         processTemplateMapper.updateById(processTemplate);
 
-        //TODO 部署流程定义，后续完善
+        //优先发布在线流程设计
+        if(!StringUtils.isEmpty(processTemplate.getProcessDefinitionPath())) {
+            processService.deployByZip(processTemplate.getProcessDefinitionPath());
+        }
     }
-
 }

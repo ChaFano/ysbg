@@ -110,7 +110,9 @@
 
 >1、审批甚至 CRUD 实现
 >
->2、
+>2、审批管理实现一部分
 >
+>3、问题 ( mapper-locations: classpath:com/atguigu/*/mapper/xml/*.xml ) 解决 auth和process 下xml 找不到会报错。
+> 
 >
 
