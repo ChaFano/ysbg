@@ -33,6 +33,7 @@ public class JwtHelper {
                 .signWith(SignatureAlgorithm.HS512,tokenSignKey)
                 .compressWith(CompressionCodecs.GZIP)
                 .compact();
+
         return token;
     }
 

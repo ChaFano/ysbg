@@ -76,7 +76,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         // token置于header里
         String token = request.getHeader("token");
 
-        logger.info("token:"+token);
+        logger.info("==============================================token:"+token);
+        logger.info("==============================================token:"+token);
+        logger.info("==============================================token:"+token);
+        logger.info("==============================================token:"+token);
+        logger.info("==============================================token:"+token);
+        logger.info("==============================================token:"+token);
+        logger.info("==============================================token:"+token);
 
         if (!StringUtils.isEmpty(token)) {
 
