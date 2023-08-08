@@ -5,6 +5,7 @@ import com.atguigu.common.jwt.JwtHelper;
 import com.atguigu.common.result.R;
 import com.atguigu.common.result.ResultCodeEnum;
 import com.atguigu.common.util.ResponseUtil;
+import com.atguigu.security.custom.LoginUserInfoHelper;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -77,12 +78,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String token = request.getHeader("token");
 
         logger.info("==============================================token:"+token);
-        logger.info("==============================================token:"+token);
-        logger.info("==============================================token:"+token);
-        logger.info("==============================================token:"+token);
-        logger.info("==============================================token:"+token);
-        logger.info("==============================================token:"+token);
-        logger.info("==============================================token:"+token);
 
         if (!StringUtils.isEmpty(token)) {
 
@@ -91,6 +86,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             logger.info("useruame:"+username);
 
             if (!StringUtils.isEmpty(username)) {
+
+                LoginUserInfoHelper.setUserId(JwtHelper.getUserId(token));
+                LoginUserInfoHelper.setUsername(username);
 
                 String authoritiesString = (String) redisTemplate.opsForValue().get(username);
 
