@@ -70,5 +70,9 @@ public class SysUserController {
         return R.ok();
     }
 
-
+    @ApiOperation(value = "获取当前用户基本信息")
+    @GetMapping("getCurrentUser")
+    public R getCurrentUser() {
+        return R.ok(service.getCurrentUser());
+    }
 }

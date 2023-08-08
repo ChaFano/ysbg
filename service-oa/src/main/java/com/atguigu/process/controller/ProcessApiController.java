@@ -5,9 +5,11 @@ import com.atguigu.model.process.ProcessTemplate;
 import com.atguigu.process.service.ProcessService;
 import com.atguigu.process.service.ProcessTemplateService;
 import com.atguigu.process.service.ProcessTypeService;
+import com.atguigu.vo.process.ApprovalVo;
 import com.atguigu.vo.process.ProcessFormVo;
 import com.atguigu.model.process.Process;
 
+import com.atguigu.vo.process.ProcessVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -69,4 +71,39 @@ public class ProcessApiController {
         return R.ok(processTypeService.findProcessType());
     }
 
+    @ApiOperation(value = "获取审批详情")
+    @GetMapping("show/{id}")
+    public R show(@PathVariable Long id) {
+        return R.ok(processService.show(id));
+    }
+
+    @ApiOperation(value = "审批")
+    @PostMapping("approve")
+    public R approve(@RequestBody ApprovalVo approvalVo) {
+        processService.approve(approvalVo);
+        return R.ok();
+    }
+
+    @ApiOperation(value = "已处理")
+    @GetMapping("/findProcessed/{page}/{limit}")
+    public R findProcessed(
+            @ApiParam(name = "page", value = "当前页码", required = true)
+            @PathVariable Long page,
+            @ApiParam(name = "limit", value = "每页记录数", required = true)
+            @PathVariable Long limit) {
+        Page<Process> pageParam = new Page<>(page, limit);
+        return R.ok(processService.findProcessed(pageParam));
+    }
+
+    @ApiOperation(value = "已发起")
+    @GetMapping("/findStarted/{page}/{limit}")
+    public R findStarted(
+            @ApiParam(name = "page", value = "当前页码", required = true)
+            @PathVariable Long page,
+
+            @ApiParam(name = "limit", value = "每页记录数", required = true)
+            @PathVariable Long limit) {
+        Page<ProcessVo> pageParam = new Page<>(page, limit);
+        return R.ok(processService.findStarted(pageParam));
+    }
 }
