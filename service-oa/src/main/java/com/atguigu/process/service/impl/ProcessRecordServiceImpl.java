@@ -39,6 +39,12 @@ public class ProcessRecordServiceImpl extends ServiceImpl<ProcessRecordMapper, P
     @Autowired
     private SysUserService sysUserService;
 
+    /**
+     * 流程记录
+     * @param processId
+     * @param status
+     * @param description
+     */
     @Override
     public void record(Long processId, Integer status, String description) {
 

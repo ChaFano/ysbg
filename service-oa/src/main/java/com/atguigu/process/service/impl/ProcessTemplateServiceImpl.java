@@ -43,15 +43,24 @@ public class ProcessTemplateServiceImpl extends ServiceImpl<ProcessTemplateMappe
 
     @Override
     public IPage<ProcessTemplate> selectPage(Page<ProcessTemplate> pageParam) {
+
         LambdaQueryWrapper<ProcessTemplate> queryWrapper = new LambdaQueryWrapper<ProcessTemplate>();
+
         queryWrapper.orderByDesc(ProcessTemplate::getId);
+
         IPage<ProcessTemplate> page = processTemplateMapper.selectPage(pageParam, queryWrapper);
+
         List<ProcessTemplate> processTemplateList = page.getRecords();
 
         List<Long> processTypeIdList = processTemplateList.stream().map(processTemplate -> processTemplate.getProcessTypeId()).collect(Collectors.toList());
 
         if(!CollectionUtils.isEmpty(processTypeIdList)) {
-            Map<Long, ProcessType> processTypeIdToProcessTypeMap = processTypeService.list(new LambdaQueryWrapper<ProcessType>().in(ProcessType::getId, processTypeIdList)).stream().collect(Collectors.toMap(ProcessType::getId, ProcessType -> ProcessType));
+
+            Map<Long, ProcessType> processTypeIdToProcessTypeMap = processTypeService.list(new LambdaQueryWrapper<ProcessType>()
+                    .in(ProcessType::getId, processTypeIdList))
+                    .stream()
+                    .collect(Collectors.toMap(ProcessType::getId, ProcessType -> ProcessType));
+
             for(ProcessTemplate processTemplate : processTemplateList) {
                 ProcessType processType = processTypeIdToProcessTypeMap.get(processTemplate.getProcessTypeId());
                 if(null == processType) continue;
@@ -67,7 +76,7 @@ public class ProcessTemplateServiceImpl extends ServiceImpl<ProcessTemplateMappe
     @Override
     public void publish(Long id) {
         ProcessTemplate processTemplate = this.getById(id);
-        processTemplate.setStatus(1);
+        processTemplate.setStatus(1);// 表示已经发布了
         processTemplateMapper.updateById(processTemplate);
 
         //优先发布在线流程设计

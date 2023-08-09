@@ -39,6 +39,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+
         logger.info("uri:"+request.getRequestURI());
 
         //如果是登录接口，直接放行
@@ -50,8 +51,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
 
         if(null != authentication) {
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
             chain.doFilter(request, response);
+
         } else {
             ResponseUtil.out(response, R.build(null, ResultCodeEnum.PERMISSION));
         }
@@ -61,6 +65,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * HttpServletRequest 获取token 根据token 获取用户信息
+     *  返回 UsernamePasswordAuthenticationToken
      * @param request
      * @return
      */
@@ -88,7 +93,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
             if (!StringUtils.isEmpty(username)) {
 
+                // 存放 用户id 和用户名
                 LoginUserInfoHelper.setUserId(JwtHelper.getUserId(token));
+
                 LoginUserInfoHelper.setUsername(username);
 
                 String authoritiesString = (String) redisTemplate.opsForValue().get(username);

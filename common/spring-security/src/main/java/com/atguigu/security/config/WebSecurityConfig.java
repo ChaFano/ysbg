@@ -29,6 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity //@EnableWebSecurity是开启SpringSecurity的默认行为
 @EnableGlobalMethodSecurity(prePostEnabled = true) // 开启基于方法的安全认证机制，也就是说在web层的controller启用注解机制的安全确认
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -62,7 +63,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 这里意思是其它所有接口需要认证才能访问
                 .anyRequest().authenticated()
                 .and()
-                //TokenAuthenticationFilter放到UsernamePasswordAuthenticationFilter的前面，这样做就是为了除了登录的时候去查询数据库外，其他时候都用token进行认证。
+                //TokenAuthenticationFilter放到UsernamePasswordAuthenticationFilter的前面，
+                // 这样做就是为了除了登录的时候去查询数据库外，其他时候都用token进行认证。
                 .addFilterBefore(new TokenAuthenticationFilter(redisTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new TokenLoginFilter(authenticationManager(),redisTemplate));
 
@@ -91,7 +93,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/favicon.ico","/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**", "/doc.html");
+        web.ignoring().antMatchers("/favicon.ico",
+                "/swagger-resources/**",
+                "/webjars/**",
+                "/v2/**",
+                "/swagger-ui.html/**",
+                "/doc.html");
     }
 
 

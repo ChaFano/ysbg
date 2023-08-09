@@ -88,6 +88,28 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
     @Autowired
     private HistoryService historyService;
 
+    /**
+     * 部署流程 上传工作流程图 发布后就部署 zip格式部署
+     * @param deployPath
+     */
+    @Override
+    public void deployByZip(String deployPath) {
+        // 定义zip输入流
+        InputStream inputStream = this
+                .getClass()
+                .getClassLoader()
+                .getResourceAsStream(deployPath);
+        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+        // 流程部署
+        Deployment deployment = repositoryService.createDeployment()
+                .addZipInputStream(zipInputStream)
+                .deploy();
+    }
+
+    /**
+     * 启动流程
+     * @param processFormVo
+     */
     @Override
     public void startUp(ProcessFormVo processFormVo) {
         //1.根据当前用户id查询用户信息
@@ -124,8 +146,9 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
         }
         variables.put("data", map);
 
+        //  processTemplate.getProcessDefinitionKey() = qingjia
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processTemplate.getProcessDefinitionKey(), businessKey, variables);
-        //业务表关联当前流程实例id
+        //业务表关联当前流程实例 id
         String processInstanceId = processInstance.getId();
         process.setProcessInstanceId(processInstanceId);
 
@@ -151,6 +174,44 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
         baseMapper.updateById(process);
     }
 
+    /**
+     * 获取当前任务列表
+     * @param processInstanceId
+     * @return
+     */
+    private List<Task> getCurrentTaskList(String processInstanceId) {
+        List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
+        return tasks;
+    }
+
+
+    /**
+     * 已发起
+     * @param pageParam
+     * @return
+     */
+    @Override
+    public IPage<ProcessVo> findStarted(Page<ProcessVo> pageParam) {
+
+        ProcessQueryVo processQueryVo = new ProcessQueryVo();
+
+        processQueryVo.setUserId(LoginUserInfoHelper.getUserId());
+
+        IPage<ProcessVo> page = processMapper.selectPageVo(pageParam, processQueryVo);
+
+        for (ProcessVo item : page.getRecords()) {
+
+            item.setTaskId("0");
+        }
+        return page;
+    }
+
+
+    /**
+     * 查询待处理流程
+     * @param pageParam
+     * @return
+     */
     @Override
     public IPage<ProcessVo> findPending(Page<Process> pageParam) {
         // 根据当前人的ID查询
@@ -175,7 +236,6 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
 
             if(process == null) { continue; }
 
-
             ProcessVo processVo = new ProcessVo();
 
             BeanUtils.copyProperties(process, processVo);
@@ -188,43 +248,18 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
         return page;
     }
 
+
+
     /**
-     * 获取当前任务列表
-     * @param processInstanceId
+     * 获取审批详情
+     * @param id
      * @return
      */
-    private List<Task> getCurrentTaskList(String processInstanceId) {
-        List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
-        return tasks;
-    }
-
-
-    @Override
-    public IPage<ProcessVo> selectPage(Page<ProcessVo> pageParam, ProcessQueryVo processQueryVo) {
-
-        IPage<ProcessVo> page = baseMapper.selectPageVo(pageParam, processQueryVo);
-        return page;
-    }
-
-    @Override
-    public void deployByZip(String deployPath) {
-        // 定义zip输入流
-        InputStream inputStream = this
-                .getClass()
-                .getClassLoader()
-                .getResourceAsStream(deployPath);
-        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-        // 流程部署
-        Deployment deployment = repositoryService.createDeployment()
-                .addZipInputStream(zipInputStream)
-                .deploy();
-    }
-
-
     @Override
     public Map<String, Object> show(Long id) {
         Process process = this.getById(id);
-        List<ProcessRecord> processRecordList = processRecordService.list(new LambdaQueryWrapper<ProcessRecord>().eq(ProcessRecord::getProcessId, id));
+        List<ProcessRecord> processRecordList = processRecordService.list(new LambdaQueryWrapper<ProcessRecord>()
+                                                                    .eq(ProcessRecord::getProcessId, id));
         ProcessTemplate processTemplate = processTemplateService.getById(process.getProcessTemplateId());
         Map<String, Object> map = new HashMap<>();
         map.put("process", process);
@@ -244,6 +279,10 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
         return map;
     }
 
+    /**
+     *  审批
+     * @param approvalVo
+     */
     @Override
     public void approve(ApprovalVo approvalVo) {
         Map<String, Object> variables1 = taskService.getVariables(approvalVo.getTaskId());
@@ -295,6 +334,10 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
     }
 
 
+    /**
+     * 结束的流程
+     * @param taskId
+     */
     private void endTask(String taskId) {
         //  当前任务
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
@@ -306,20 +349,27 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
             return;
         }
         FlowNode endFlowNode = (FlowNode) endEventList.get(0);
+
         FlowNode currentFlowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(task.getTaskDefinitionKey());
 
         //  临时保存当前活动的原始方向
         List originalSequenceFlowList = new ArrayList<>();
+
         originalSequenceFlowList.addAll(currentFlowNode.getOutgoingFlows());
         //  清理活动方向
         currentFlowNode.getOutgoingFlows().clear();
 
         //  建立新方向
         SequenceFlow newSequenceFlow = new SequenceFlow();
+
         newSequenceFlow.setId("newSequenceFlowId");
+
         newSequenceFlow.setSourceFlowElement(currentFlowNode);
+
         newSequenceFlow.setTargetFlowElement(endFlowNode);
+
         List newSequenceFlowList = new ArrayList<>();
+
         newSequenceFlowList.add(newSequenceFlow);
         //  当前节点指向新的方向
         currentFlowNode.setOutgoingFlows(newSequenceFlowList);
@@ -328,40 +378,48 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
         taskService.complete(task.getId());
     }
 
+    /**
+     * 已处理
+     * @param pageParam
+     * @return
+     */
     @Override
     public IPage<ProcessVo> findProcessed(Page<Process> pageParam) {
         // 根据当前人的ID查询
-        HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery().taskAssignee(LoginUserInfoHelper.getUsername()).finished().orderByTaskCreateTime().desc();
+        HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery()
+                                                        .taskAssignee(LoginUserInfoHelper.getUsername())
+                                                        .finished()
+                                                        .orderByTaskCreateTime()
+                                                        .desc();
         List<HistoricTaskInstance> list = query.listPage((int) ((pageParam.getCurrent() - 1) * pageParam.getSize()), (int) pageParam.getSize());
         long totalCount = query.count();
 
         List<ProcessVo> processList = new ArrayList<>();
+
         for (HistoricTaskInstance item : list) {
+
             String processInstanceId = item.getProcessInstanceId();
+
             Process process = this.getOne(new LambdaQueryWrapper<Process>().eq(Process::getProcessInstanceId, processInstanceId));
+
             if(process == null) {continue;}
             ProcessVo processVo = new ProcessVo();
             BeanUtils.copyProperties(process, processVo);
+
             processVo.setTaskId("0");
             processList.add(processVo);
         }
+
         IPage<ProcessVo> page = new Page<ProcessVo>(pageParam.getCurrent(), pageParam.getSize(), totalCount);
         page.setRecords(processList);
         return page;
     }
 
+
     @Override
-    public IPage<ProcessVo> findStarted(Page<ProcessVo> pageParam) {
+    public IPage<ProcessVo> selectPage(Page<ProcessVo> pageParam, ProcessQueryVo processQueryVo) {
 
-        ProcessQueryVo processQueryVo = new ProcessQueryVo();
-
-        processQueryVo.setUserId(LoginUserInfoHelper.getUserId());
-
-        IPage<ProcessVo> page = processMapper.selectPageVo(pageParam, processQueryVo);
-
-        for (ProcessVo item : page.getRecords()) {
-            item.setTaskId("0");
-        }
+        IPage<ProcessVo> page = baseMapper.selectPageVo(pageParam, processQueryVo);
         return page;
     }
 

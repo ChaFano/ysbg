@@ -26,6 +26,10 @@ public class ProcessTypeServiceImpl extends ServiceImpl<ProcessTypeMapper, Proce
     private ProcessTemplateService processTemplateService;
 
 
+    /**
+     * 查询审批流程类型
+     * @return
+     */
     @Override
     public List<ProcessType> findProcessType() {
         //1 查询所有审批分类，返回list集合

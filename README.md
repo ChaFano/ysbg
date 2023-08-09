@@ -2,7 +2,7 @@
 
 ## 技术栈
 
->后端: SpringBoot + MyBatisPlus + SpringSecurity + Redis + Activiti+ MySQL
+>后端: SpringBoot + MyBatisPlus + SpringSecurity + Redis + Activiti + MySQL
 >
 >前端: vue-admin-template + Node.js + Npm + Vue + ElementUI + Axios
 >
@@ -226,4 +226,20 @@ FROM MenuTree;
 >7、UserDetailsService loadUserByUsername(username) 它是用来根据用户名加载用户信息的方法。在用户进行登录认证时，
 >Spring Security 会调用 loadUserByUsername() 方法来获取用户的详细信息，包括用户名、密码和权限等，以便进行后续的认证和授权操作。 
 >
->8、
+>8、ThreadLocal 是 Java 中的一个类，用于在多线程环境下存储线程局部变量
+>
+>ThreadLocal 的主要作用包括：
+ 
+>线程隔离： 每个线程都拥有自己的线程局部变量，这些变量在其他线程中是不可见的，从而实现了线程之间的隔离。
+ 
+> 线程数据共享： 在多线程环境中，有些情况下需要共享某些数据，但又希望每个线程都拥有自己的副本，不会被其他线程修改影响。ThreadLocal 提供了一种方式来实现这种共享，每个线程可以独立地修改自己的副本，而不会影响其他线程。
+ 
+>线程上下文传递： 在某些情况下，需要在线程之间传递一些上下文信息，如用户身份、请求信息等。使用 ThreadLocal 可以方便地将这些上下文信息绑定到当前线程，以供后续的处理使用。
+ 
+> 减少同步： 在多线程环境中，如果多个线程共享同一个变量，可能会涉及到同步操作，而使用 ThreadLocal 可以避免这种同步，从而减少线程竞争和锁的使用。
+>
+>9、审批流程数据库表理解 
+>
+>10、 工作流部署流程基本理解 api 使用还不是很了解 需要去学 Activiti 框架再理解
+>
+>
