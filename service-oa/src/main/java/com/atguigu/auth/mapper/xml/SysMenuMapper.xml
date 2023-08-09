@@ -4,15 +4,6 @@
 
     <resultMap id="sysMenuMap" type="com.atguigu.model.system.SysMenu" autoMapping="true">
 
-<!--        <id column="parent_id" property="parentId"></id>-->
-<!--        <result column="name" property="name"></result>-->
-<!--        <result column="type" property="type"></result>-->
-<!--        <result column="path" property="path"></result>-->
-<!--        <result column="component" property="component"></result>-->
-<!--        <result column="perms" property="perms"></result>-->
-<!--        <result column="icon" property="icon"></result>-->
-<!--        <result column="sort_value" property="sortValue"></result>-->
-<!--        <result column="status" property="status"></result>-->
     </resultMap>
 
 

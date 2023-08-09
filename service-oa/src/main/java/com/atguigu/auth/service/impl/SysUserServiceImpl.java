@@ -34,6 +34,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     SysUserMapper sysUserMapper;
 
+    /**
+     *  条件分页查询
+     * @param page
+     * @param limit
+     * @param sysUserQueryVo
+     * @return
+     */
     @Override
     public Page index(Long page, Long limit, SysUserQueryVo sysUserQueryVo) {
 
@@ -63,6 +70,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return baseMapper.selectPage(pageParam,wrapper);
     }
 
+    /**
+     *  修改用户的状态 1正常使用 0 禁止使用
+     * @param id
+     * @param status
+     */
     @Transactional
     @Override
     public void updateStatus(Long id, Integer status) {
@@ -75,6 +87,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         this.updateById(sysUser);
     }
 
+    /**
+     * 根据用户名获取用户信息
+     * @param username
+     * @return
+     */
     @Override
     public SysUser getByUsername(String username) {
         return this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username));
@@ -105,6 +122,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return result;
     }
 
+    /**
+     * 获取当前用户的姓名和电话号码 微信公众号端的使用
+     * @return
+     */
     @Override
     public Map<String, Object> getCurrentUser() {
         SysUser sysUser = sysUserMapper.selectById(LoginUserInfoHelper.getUserId());

@@ -84,7 +84,7 @@ public class R<T> {
      * @param <T>
      * @return
      */
-    public static<T> R<T> ok(T data){
+    public static <T> R<T> ok(T data){
         R<T> result = build(data);
         return build(data, ResultCodeEnum.SUCCESS);
     }

@@ -50,6 +50,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         return baseMapper.selectPage(pageNum,wrapper);
     }
 
+    /**
+     * 根据用户 id 获取角色数据
+     * @param userId
+     * @return
+     */
     @Override
     public Map<String, Object> findRoleByAdminId(Long userId) {
 
@@ -63,12 +68,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId,userId)
                 .select(SysUserRole::getRoleId)
         );
+
         // 将角色 id 收集成集合
         List<Long> existRoleIdList = existUsersRoleList.stream().map(c->c.getRoleId()).collect(Collectors.toList());
+
 
         // 对角色进行分类
         List<SysRole> assginRoleList = new ArrayList<>();
         for(SysRole role : allRolesList){
+
             if(existRoleIdList.contains(role.getId())){
                 assginRoleList.add(role);
             }
@@ -81,9 +89,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     }
 
+    /**
+     * 分配角色
+     * @param assginRoleVo
+     */
     @Transactional
     @Override
     public void doAssign(AssginRoleVo assginRoleVo) {
+        // 先删除原有的角色 再重写分配
         sysUserRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, assginRoleVo.getUserId()));
 
         for(Long roleId : assginRoleVo.getRoleIdList()) {

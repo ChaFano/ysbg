@@ -68,6 +68,7 @@ public class IndexController {
 
         logger.info("==================== username: " + username);
         Map<String, Object> map = sysUserService.getUserInfo(username);
+
         return R.ok(map);
     }
     /**

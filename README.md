@@ -123,4 +123,107 @@
 >
 > 3、审批发起、待处理、已处理、 测试通过 准备回顾知识点 写笔记。
 
+### 2023-8-9 项目回顾
 
+>1、回顾公共方法的封装 泛型、枚举的使用，jwt 、中间件辅助配置类的使用
+>
+>2、对持久层 model 设计理解 BaseEntity 封装公共属性
+>
+>3、对构建树形菜单的理解 
+
+```sql
+WITH RECURSIVE MenuTree AS (
+  SELECT 
+    id, parent_id, name, type, path, component, perms, icon, sort_value, status
+  FROM sys_menu
+  WHERE parent_id = 0
+  
+  UNION ALL
+  
+  SELECT 
+    m.id, m.parent_id, m.name, m.type, m.path, m.component, m.perms, m.icon, m.sort_value, m.status
+  FROM sys_menu m
+  INNER JOIN MenuTree mt ON m.parent_id = mt.id
+)
+SELECT 
+  id, parent_id, name, type, path, component, perms, icon, sort_value, status
+FROM MenuTree;
+
+```
+
+``` java 
+/**
+     * 使用递归方法建菜单
+     * @param sysMenuList
+     * @return
+     */
+    public static List<SysMenu> buildTree(List<SysMenu> sysMenuList) {
+        List<SysMenu> trees = new ArrayList<>();
+        for(SysMenu sysMenu : sysMenuList){
+            if(sysMenu.getParentId().longValue() == 0){
+                trees.add(findChildren(sysMenu,sysMenuList));
+            }
+        }
+        return trees;
+    }
+
+    /**
+     * 递归查找子节点
+     * @param treeNodes
+     * @return
+     */
+    private static SysMenu findChildren(SysMenu sysMenu, List<SysMenu> treeNodes){
+
+        sysMenu.setChildren(new ArrayList<SysMenu>());
+
+        for(SysMenu it : treeNodes){
+            if(sysMenu.getId().longValue() == it.getParentId().longValue()){
+                if(sysMenu.getChildren() == null){
+                    sysMenu.setChildren(new ArrayList<>());
+                }
+                sysMenu.getChildren().add(findChildren(it,treeNodes));
+            }
+        }
+        return sysMenu;
+
+    }
+
+```
+
+>4、mybatis 里面自动映射实体类使用 resultMap 可以不用写数据 直接指定 实体类地址
+
+```
+    <resultMap id="sysMenuMap" type="com.atguigu.model.system.SysMenu" autoMapping="true">
+        
+    </resultMap>
+
+
+    <!-- 根据用户id 查询该用户的菜单权限 -->
+    <select id="findListByUserId" resultMap="sysMenuMap">
+        select distinct
+            m.id,m.parent_id,m.name,m.type,m.path,m.component,m.perms,
+            m.icon,m.sort_value,m.status,m.create_time,m.update_time,m.is_deleted
+
+        from sys_menu m
+                 inner join sys_role_menu rm on rm.menu_id = m.id
+                 inner join sys_user_role ur on ur.role_id = rm.role_id
+
+        where ur.user_id=#{userId}
+          and m.status= 1
+          and rm.is_deleted=0
+          and ur.is_deleted=0
+          and m.is_deleted=0
+    </select>
+```
+
+
+
+
+>5、Mybatis plus 中 LambdaQueryWrapper 的使用方式，使用 lambda 表达式 可以使用方法引用的写法 ，减少 QueryWrapper中数据库字段匹配写法。
+> 
+>6、对菜单处理重新理解、对角色分配重新理解、用户管理 
+>
+>7、UserDetailsService loadUserByUsername(username) 它是用来根据用户名加载用户信息的方法。在用户进行登录认证时，
+>Spring Security 会调用 loadUserByUsername() 方法来获取用户的详细信息，包括用户名、密码和权限等，以便进行后续的认证和授权操作。 
+>
+>8、
