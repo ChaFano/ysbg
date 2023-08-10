@@ -242,4 +242,31 @@ FROM MenuTree;
 >
 >10、 工作流部署流程基本理解 api 使用还不是很了解 需要去学 Activiti 框架再理解
 >
+
+### 2023-8-10 activity 理解
+
+>1、对流程的部署、启动、查询、处理 有基本了解
 >
+>上述 四个步骤 部署、启动、查询、处理 对于一个 工作流任务 的基本处理
+>
+> 部署 一般由管理员操作
+>
+> 启动 一般由员工发起申请
+>
+> 查询和处理 一般由员工的上级领导 查看和批复
+>
+>2、流程定义的查询 、删除 接口的了解
+>
+>3、Service 接口的了解
+>
+>   RepositoryService | activiti的资源管理类 
+>   
+>   RuntimeService    | activiti的流程运行管理类 
+>
+>   TaskService       | activiti的任务管理类     
+>
+>   HistoryService    | activiti的历史管理类     
+>
+>   ManagerService    | activiti的引擎管理类     
+>
+>4、历史流程数据查询 查询员工参与的流程、查询流程执行到那一步等
