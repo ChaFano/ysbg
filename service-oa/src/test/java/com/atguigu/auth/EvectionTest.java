@@ -1,9 +1,6 @@
 package com.atguigu.auth;
 
-import org.activiti.engine.HistoryService;
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
-import org.activiti.engine.TaskService;
+import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.history.HistoricTaskInstance;
@@ -168,6 +165,9 @@ public class EvectionTest {
     @Autowired
     HistoryService historyService;
 
+    /**
+     * 查询某个流程实例的执行流程过程
+     */
     @Test
     public void findProcessedTaskList() {
 
@@ -192,16 +192,95 @@ public class EvectionTest {
             System.out.println("<==========================>");
         }
 
+    }
+
+    /**
+     * 查询某个用户操作过的流程
+     */
+    @Test
+    public void findProcessTaskByName(){
         //张三已处理过的历史任务
-//        List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().taskAssignee("zhangsan").finished().list();
-//        for (HistoricTaskInstance historicTaskInstance : list) {
-//            System.out.println("流程实例id：" + historicTaskInstance.getProcessInstanceId());
-//            System.out.println("任务id：" + historicTaskInstance.getId());
-//            System.out.println("任务负责人：" + historicTaskInstance.getAssignee());
-//            System.out.println("任务名称：" + historicTaskInstance.getName());
-//        }
+        List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().taskAssignee("zhangsan").finished().list();
+        for (HistoricTaskInstance historicTaskInstance : list) {
+            System.out.println("流程实例id：" + historicTaskInstance.getProcessInstanceId());
+            System.out.println("任务id：" + historicTaskInstance.getId());
+            System.out.println("任务负责人：" + historicTaskInstance.getAssignee());
+            System.out.println("任务名称：" + historicTaskInstance.getName());
+        }
+    }
+
+
+    /**
+     * 启动流程实例，添加 businessKey 这个key 一般和用户绑定
+     */
+    @Test
+    public void addBusinessKey(){
+//        1、得到ProcessEngine
+//        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+//        2、得到RunTimeService
+//        RuntimeService runtimeService = processEngine.getRuntimeService();
+
+//        1、启动流程实例，同时还要指定业务标识businessKey，也就是出差申请单id，这里是1001
+        ProcessInstance processInstance = runtimeService.
+                startProcessInstanceByKey("process","1001");
+//        2、输出processInstance相关属性
+        System.out.println("业务id=="+processInstance.getBusinessKey());
 
     }
 
+    /**
+     * 查询流程实例
+     */
+    @Test
+    public void queryProcessInstance() {
+
+        String processDefinitionKey = "process";
+        List<ProcessInstance> processInstanceList = runtimeService.createProcessInstanceQuery()
+                .processDefinitionKey(processDefinitionKey)
+                .list();
+
+        for (ProcessInstance processInstance : processInstanceList){
+            System.out.println("----------------------------");
+            System.out.println("流程实例id ：" + processInstance.getProcessInstanceId());
+            System.out.println("流程名称：" + processInstance.getProcessDefinitionName());
+            System.out.println("所属流程定义id ：" + processInstance.getProcessDefinitionId());
+            System.out.println("是否执行完成 ：" + processInstance.isEnded());
+            System.out.println("是否挂起 ：" + processInstance.isSuspended());
+            System.out.println("当前活动标识 ：" + processInstance.getActivityId());
+        }
+    }
+
+    /**
+     * 全部流程实例挂起与激活
+     */
+    @Test
+    public void SuspendAllProcessInstance(){
+        ProcessDefinition processDefinition = repositoryService
+                .createProcessDefinitionQuery()
+                .processDefinitionKey("process")
+                .singleResult();
+
+        // 得到当前流程定义的实例是否都为暂停状态
+        boolean suspended = processDefinition.isSuspended();
+        // 流程定义id
+        String processDefinitionId = processDefinition.getId();
+
+        if(suspended){
+
+            // 如果是暂停，可以执行激活操作 ,参数1 ：流程定义id ，参数2：是否激活，参数3：激活时间
+            repositoryService.activateProcessDefinitionById(processDefinitionId,
+                    true,
+                    null
+            );
+            System.out.println("流程定义："+processDefinitionId+",已激活");
+        }else{
+            // 如果是激活状态，可以暂停，参数1 ：流程定义id ，参数2：是否暂停，参数3：暂停时间
+            repositoryService.suspendProcessDefinitionById(processDefinitionId,
+                    true,
+                    null);
+            System.out.println("流程定义："+processDefinitionId+",已挂起");
+        }
+
+    }
 
 }

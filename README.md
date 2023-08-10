@@ -270,3 +270,5 @@ FROM MenuTree;
 >   ManagerService    | activiti的引擎管理类     
 >
 >4、历史流程数据查询 查询员工参与的流程、查询流程执行到那一步等
+>
+>5、添加流程 businessKey ,查询流程实列 ,流程的挂起于激活
